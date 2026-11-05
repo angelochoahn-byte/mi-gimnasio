@@ -279,10 +279,10 @@ function verCliente(id){
       <div class="btns"><button type="button" class="primary" data-s="cobrar">Renovar plan</button><button type="button" data-s="wa">WhatsApp</button></div>
       <button type="button" class="small" data-s="reservar">Reservar hora</button>
       ${prox.length?`<h3>Próximas reservas</h3><div class="list">${prox.map(r=>`<div class="item"><span class="grow">${fdate(r.fecha,{weekday:"short",day:"numeric",month:"short"})}</span><span class="num">${fh(r.inicio)}</span></div>`).join("")}</div>`:""}
-      <h3>Pagos</h3><div class="list">${pagos.length?pagos.slice(0,12).map(m=>`<div class="item"><span class="grow">${fdate(m.fecha,{day:"numeric",month:"short",year:"2-digit"})} · ${esc(m.categoria)}</span><span class="num">${money(m.monto)}</span></div>`).join(""):'<div class="empty">Sin pagos registrados.</div>'}</div>
+      <h3>Pagos</h3><div class="list">${pagos.length?pagos.slice(0,12).map(m=>`<div class="item"><span class="grow">${fdate(m.fecha,{day:"numeric",month:"short",year:"2-digit"})} · ${esc(m.categoria)}</span><span class="num">${money(m.monto)}</span><button type="button" class="small" data-s="dup" data-id="${m.id}">Duplicar</button></div>`).join(""):'<div class="empty">Sin pagos registrados.</div>'}</div>
       <div class="btns"><button type="button" class="small" data-s="editar">Editar</button><button type="button" class="small" data-s="baja">${c.baja?"Reactivar":"Dar de baja"}</button><button type="button" class="small danger" data-s="borrar">Eliminar</button></div>`,
     onClick:(a,b)=>{
-      if(a==="cobrar")cobrar(c); if(a==="wa")whats(c); if(a==="editar")formCliente(c); if(a==="reservar")formReserva({clienteId:c.id});
+      if(a==="cobrar")cobrar(c); if(a==="wa")whats(c); if(a==="dup"){const m=S.movs.find(x=>x.id===b.dataset.id);if(m)duplicarMov(m)} if(a==="editar")formCliente(c); if(a==="reservar")formReserva({clienteId:c.id});
       if(a==="baja"){upd(COL.clientes,c.id,c.baja?{baja:false,reactivado:today()}:{baja:true});closeSheet()}
       if(a==="borrar")confirmBtn(b,async()=>{await del(COL.clientes,c.id);closeSheet();toast("Cliente eliminado")});
     }});
@@ -392,24 +392,32 @@ function verReserva(id){
 
 // ---------- dinero ----------
 function cuentaOpts(sel){return cfg().cuentas.map(c=>`<option ${c===sel?"selected":""}>${esc(c)}</option>`).join("")}
-function formMov(tipo,m){
-  const nuevo=!m;m=m||{tipo,fecha:today(),categoria:tipo==="gasto"?"Otro":"Membresía",cuenta:cfg().cuentas[0],de:cfg().cuentas[0],a:cfg().cuentas[1]||cfg().cuentas[0]};
+// copia un movimiento con la fecha de hoy; se puede cambiar antes de guardar
+function duplicarMov(m){const {id,aprox,...copia}=m;formMov(m.tipo,{...copia,fecha:today()},true)}
+function formMov(tipo,m,dup){
+  const nuevo=!m||!m.id;m=m||{tipo,fecha:today(),categoria:tipo==="gasto"?"Otro":"Membresía",cuenta:cfg().cuentas[0],de:cfg().cuentas[0],a:cfg().cuentas[1]||cfg().cuentas[0]};
   const tras=m.tipo==="traspaso",cats=m.tipo==="gasto"?GASTOS:INGRESOS;
-  sheet({title:(nuevo?"Nuevo ":"Editar ")+(tras?"traspaso":m.tipo==="gasto"?"gasto":"ingreso"),
-    body:`<div class="grid2"><label>Monto<input name="monto" id="m-monto" inputmode="decimal" value="${m.monto??""}"></label>
+  sheet({title:(dup?"Duplicar ":nuevo?"Nuevo ":"Editar ")+(tras?"traspaso":m.tipo==="gasto"?"gasto":"ingreso"),
+    body:`${dup?'<p class="sub">Es una copia con la fecha de hoy. Cambia lo que haga falta y toca <b>Guardar copia</b>.</p>':""}<div class="grid2"><label>Monto<input name="monto" id="m-monto" inputmode="decimal" value="${m.monto??""}"></label>
       <label>Fecha<input type="date" name="fecha" id="m-fecha" value="${m.fecha}"></label></div>
       ${tras?`<div class="grid2"><label>Sale de<select name="de" id="m-de">${cuentaOpts(m.de)}</select></label><label>Entra a<select name="a" id="m-a">${cuentaOpts(m.a)}</select></label></div><p class="sub">Un traspaso mueve dinero entre tus cuentas. No cuenta como ingreso ni como gasto.</p>`
       :`<div class="grid2"><label>Categoría<select name="categoria" id="m-cat">${cats.map(x=>`<option ${x===m.categoria?"selected":""}>${x}</option>`).join("")}</select></label>
       <label>${m.tipo==="gasto"?"Pagado con":"Entró a"}<select name="cuenta" id="m-cuenta">${cuentaOpts(m.cuenta||cfg().cuentas[0])}</select></label></div>`}
       <label>Descripción<input name="descripcion" id="m-desc" value="${esc(m.descripcion)}" placeholder="${tras?"Ej. depósito del efectivo de la semana":m.tipo==="gasto"?"Ej. recibo de luz de octubre":"Ej. venta de agua"}"></label>`,
-    extra:nuevo?"":'<button type="button" class="danger" data-s="borrar">Eliminar</button>',
-    onClick:(a,b)=>{if(a==="borrar")confirmBtn(b,async()=>{await del(COL.movs,m.id);closeSheet();toast("Movimiento eliminado")})},
+    submit:dup?"Guardar copia":"Guardar",
+    extra:nuevo?"":'<button type="button" data-s="dup">Duplicar</button><button type="button" class="danger" data-s="borrar">Eliminar</button>',
+    onClick:(a,b)=>{if(a==="dup"){duplicarMov(m);return}if(a==="borrar")confirmBtn(b,async()=>{await del(COL.movs,m.id);closeSheet();toast("Movimiento eliminado")})},
     onSubmit:async d=>{const monto=parseFloat(String(d.monto).replace(",","."));if(!(monto>0))return "Escribe un monto mayor que cero.";
       if(tras&&d.de===d.a)return "Elige dos cuentas distintas.";
       const data=tras?{tipo:"traspaso",monto,fecha:d.fecha||today(),de:d.de,a:d.a,descripcion:d.descripcion.trim()}
         :{tipo:m.tipo,monto,fecha:d.fecha||today(),categoria:d.categoria,cuenta:d.cuenta,descripcion:d.descripcion.trim()};
       if(!nuevo&&m.aprox&&d.fecha!==m.fecha)data.aprox=false;
-      const ok=nuevo?await add(COL.movs,data):await upd(COL.movs,m.id,data);if(ok)toast("Guardado");return ok}});
+      if(nuevo&&m.clienteId)data.clienteId=m.clienteId;
+      const ok=nuevo?await add(COL.movs,data):await upd(COL.movs,m.id,data);
+      // pago por hora duplicado: el cliente queda al día con la fecha del nuevo pago
+      const c=nuevo&&ok&&data.categoria==="Pago por hora"&&cli(m.clienteId);
+      if(c&&(!c.vence||c.vence<data.fecha))await upd(COL.clientes,c.id,{vence:data.fecha,baja:false});
+      if(ok)toast(dup?"Copia guardada":"Guardado");return ok}});
 }
 function saldos(){const o={};cfg().cuentas.forEach(c=>o[c]=0);
   S.movs.forEach(m=>{const v=Number(m.monto||0);if(m.tipo==="traspaso"){o[m.de]=(o[m.de]||0)-v;o[m.a]=(o[m.a]||0)+v}else{const c=m.cuenta||cfg().cuentas[0];o[c]=(o[c]||0)+(m.tipo==="gasto"?-v:v)}});
