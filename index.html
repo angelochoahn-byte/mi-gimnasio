@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Mi Gimnasio</title>
+<title>FITBOX</title>
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#eef0ec" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#12161a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Mi Gimnasio">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="FITBOX">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="fonts/metropolis-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
@@ -20,95 +20,129 @@
 <script src="gymdb.js"></script>
 </head>
 <body>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
-/* Layout: app de una mano. Encabezado fijo, contenido en tarjetas, barra de pestañas abajo. */
+/* Fuentes de FITBOX. Futura es la de títulos: viene instalada en iPhone, iPad y Mac.
+   Donde no está (Android, Windows) se usa Jost, una versión libre muy parecida.
+   Metropolis es la del texto y va incluida en la app. */
+@font-face{font-family:"Jost";font-weight:500;font-style:normal;font-display:swap;src:url(fonts/jost-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Jost";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/jost-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Metropolis";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/metropolis-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Metropolis";font-weight:500;font-style:normal;font-display:swap;src:url(fonts/metropolis-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Metropolis";font-weight:600;font-style:normal;font-display:swap;src:url(fonts/metropolis-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Metropolis";font-weight:700;font-style:normal;font-display:swap;src:url(fonts/metropolis-latin-700-normal.woff2) format("woff2")}
+/* Layout: app de una mano. Barra negra arriba con la marca, contenido en tarjetas, barra de pestañas negra abajo.
+   Colores de marca: naranja #FAA300, negro #000000, gris oscuro #4B4B4B, gris claro #EBEBEB. */
 :root{
-  --bg:#eef0ec; --surface:#ffffff; --ink:#1b2127; --muted:#5b646d; --line:#d9ddd7; --chip:#e5e9ea;
-  --accent:#2c5a86; --accent-ink:#ffffff; --accent-soft:#dbe6f0;
-  --good:#2b7a4b; --good-soft:#dcefe2; --warn:#a86b12; --warn-soft:#f6ead2; --bad:#b3392d; --bad-soft:#f6dcd8;
-  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
-  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --brand:#FAA300; --black:#000000; --graphite:#4B4B4B; --mist:#EBEBEB;
+  --bg:var(--mist); --surface:#ffffff; --ink:var(--black); --muted:var(--graphite); --line:#d4d4d4; --chip:var(--mist);
+  --accent:var(--brand); --accent-ink:var(--black); --accent-soft:#fdeccb; --accent-fg:#8f5600;
+  --bar:var(--black); --bar-ink:var(--mist); --bar-muted:#a8a8a8; --bar-line:#262626;
+  --focus:var(--black);
+  --good:#1e7444; --good-soft:#dcefe2; --warn:#8f5600; --warn-soft:#fdeccb; --bad:#b3261e; --bad-soft:#f8dcd9;
+  --scrim:rgba(0,0,0,.5);
+  --display:"Futura","Futura PT","Jost","Century Gothic",system-ui,sans-serif;
+  --body:"Metropolis",system-ui,-apple-system,"Segoe UI",sans-serif;
   --r:12px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12161a; --surface:#1b2127; --ink:#e7ebee; --muted:#9aa4ad; --line:#2b333b; --chip:#252d35;
-  --accent:#86b4e2; --accent-ink:#0d1a27; --accent-soft:#1f3346;
-  --good:#61c38c; --good-soft:#173326; --warn:#e3b257; --warn-soft:#3a2d14; --bad:#f07d6f; --bad-soft:#3d1d19; color-scheme:dark}}
+  --bg:var(--black); --surface:#161616; --ink:var(--mist); --muted:#a8a8a8; --line:#2e2e2e; --chip:#262626;
+  --accent-soft:#3a2700; --accent-fg:var(--brand); --bar-line:#262626; --focus:var(--brand);
+  --good:#5cc88a; --good-soft:#12301f; --warn:var(--brand); --warn-soft:#3a2700; --bad:#ff7b6e; --bad-soft:#3d1a17;
+  --scrim:rgba(0,0,0,.65); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#12161a; --surface:#1b2127; --ink:#e7ebee; --muted:#9aa4ad; --line:#2b333b; --chip:#252d35;
-  --accent:#86b4e2; --accent-ink:#0d1a27; --accent-soft:#1f3346;
-  --good:#61c38c; --good-soft:#173326; --warn:#e3b257; --warn-soft:#3a2d14; --bad:#f07d6f; --bad-soft:#3d1d19; color-scheme:dark}
+  --bg:var(--black); --surface:#161616; --ink:var(--mist); --muted:#a8a8a8; --line:#2e2e2e; --chip:#262626;
+  --accent-soft:#3a2700; --accent-fg:var(--brand); --bar-line:#262626; --focus:var(--brand);
+  --good:#5cc88a; --good-soft:#12301f; --warn:var(--brand); --warn-soft:#3a2700; --bad:#ff7b6e; --bad-soft:#3d1a17;
+  --scrim:rgba(0,0,0,.65); color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;-webkit-tap-highlight-color:transparent}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bar)}
 .wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
-header.top .wrap{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-block:12px 10px}
-h1{font-family:var(--display);font-size:28px;letter-spacing:.01em;margin:0;line-height:1;text-wrap:balance}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bar);color:var(--bar-ink);border-bottom:1px solid var(--bar-line)}
+header.top .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:10px 12px}
+header.top .ttl{display:flex;flex-direction:column;gap:3px;min-width:0}
+.brand{font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.22em;color:var(--brand);line-height:1}
+header.top .sub{color:var(--bar-muted);text-align:right}
+h1{font-family:var(--display);font-weight:700;font-size:28px;letter-spacing:.01em;margin:0;line-height:1.05;text-wrap:balance}
 .sub{color:var(--muted);font-size:13px}
-main .wrap{display:flex;flex-direction:column;gap:14px;padding-block:14px calc(90px + env(safe-area-inset-bottom,0px))}
-h2{font-family:var(--display);font-size:21px;margin:0;letter-spacing:.01em}
-h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0;font-weight:600}
+main .wrap{display:flex;flex-direction:column;gap:14px;padding-block:14px calc(96px + env(safe-area-inset-bottom,0px))}
+h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0;letter-spacing:.01em;line-height:1.15;text-wrap:balance}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0;font-weight:700}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .row{display:flex;align-items:center;gap:10px;min-width:0}
 .row.between{justify-content:space-between}
 .grow{flex:1;min-width:0}
 .num{font-variant-numeric:tabular-nums}
-.big{font-family:var(--display);font-size:34px;line-height:1;font-weight:700}
+.big{font-family:var(--display);font-size:34px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:6px}
-.stat .v{font-family:var(--display);font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
-.stat .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600}
-.balance{border-left:0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left}
+.stat .v{font-family:var(--display);font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.stat .v.warn{color:var(--warn)}
+.stat .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
 .pos{color:var(--good)} .neg{color:var(--bad)}
-.pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap;background:var(--chip);color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;background:var(--chip);color:var(--muted)}
 .pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
 .list{display:flex;flex-direction:column}
-.item{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line);min-width:0;background:none;border-left:0;border-right:0;border-bottom:0;color:inherit;font:inherit;text-align:left;width:100%;cursor:pointer}
+.item{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line);min-width:0;background:none;border-left:0;border-right:0;border-bottom:0;border-radius:0;color:inherit;font:inherit;font-weight:inherit;text-align:left;width:100%;cursor:pointer;min-height:0}
 .list > .item:first-child{border-top:0;padding-top:2px}
 .item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item .m{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .empty{color:var(--muted);font-size:14px;padding:6px 0}
-button,.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 14px;cursor:pointer;min-height:42px}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button,.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 14px;cursor:pointer;min-height:44px;transition:transform .08s ease,opacity .08s ease}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}
+button:active,.btn:active{transform:scale(.97);opacity:.85}
+button:disabled{opacity:.5}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .danger{color:var(--bad);border-color:var(--bad-soft)}
-.small{min-height:34px;padding:6px 10px;font-size:14px}
+.small{min-height:40px;padding:7px 12px;font-size:14px}
 .btns{display:flex;gap:8px;flex-wrap:wrap}
 .btns > *{flex:1}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.chip{border-radius:999px;min-height:34px;padding:6px 12px;font-size:14px;white-space:nowrap;background:var(--surface)}
+.chip{border-radius:999px;min-height:38px;padding:7px 14px;font-size:14px;white-space:nowrap;background:var(--surface)}
 .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 input,select,textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:44px}
 label{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted);font-weight:600;min-width:0}
 label.check{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-weight:500;font-size:15px}
-label.check input{width:20px;min-height:20px}
+label.check input{width:20px;min-height:20px;accent-color:var(--brand)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:6;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:12px 18px}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:6;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25);padding:12px 20px;min-height:48px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--bar);border-top:1px solid var(--bar-line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
 nav.tabs .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
-nav.tabs button{border:0;border-radius:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;font-weight:600;color:var(--muted);padding:8px 2px 9px;min-height:58px}
+nav.tabs button{position:relative;border:0;border-radius:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;font-weight:600;color:var(--bar-muted);padding:9px 2px 9px;min-height:60px}
 nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-nav.tabs button.on{color:var(--accent)}
+nav.tabs button.on{color:var(--brand)}
+nav.tabs button.on::before{content:"";position:absolute;top:0;left:28%;right:28%;height:3px;border-radius:0 0 3px 3px;background:var(--brand)}
+nav.tabs button:active{transform:none}
+/* código en el panel */
+.codecard{text-align:left;font-weight:inherit}
+.codecard .codev{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums}
+/* cuentas bancarias */
+.acct{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.acct:first-child{border-top:0;padding-top:0}
+.acct .bank{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.02em}
+.acct .meta{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.copynum{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--bg);border:1px dashed var(--line);text-align:left;padding:10px 12px}
+.copynum .n{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.06em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;min-width:0}
+.copynum .act{font-size:13px;font-weight:700;color:var(--accent-ink);background:var(--accent);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.copynum.ok .act{background:var(--good);color:var(--surface)}
 /* agenda */
 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.day{display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;min-height:52px;border-radius:10px;font-size:12px}
+.day{display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;min-height:54px;border-radius:10px;font-size:12px}
 .day b{font-family:var(--display);font-size:20px;line-height:1.1}
 .day.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.day.hoy:not(.on){border-color:var(--accent);color:var(--accent)}
-.slot{display:grid;grid-template-columns:62px 1fr;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
+.day.hoy:not(.on){border-color:var(--brand);border-width:2px;color:var(--accent-fg)}
+.slot{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
 .slot:first-child{border-top:0}
-.slot .h{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;padding-top:2px}
+.slot .h{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;padding-top:2px;white-space:nowrap}
 .slot .names{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:0}
 .plates{display:inline-flex;gap:3px;margin-right:4px}
 .plates i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--line);display:block}
-.plates i.f{background:var(--accent);border-color:var(--accent)}
+.plates i.f{background:var(--brand);border-color:var(--brand)}
 .plates.full i.f{background:var(--bad);border-color:var(--bad)}
-.who{font-size:13px;padding:3px 8px;border-radius:7px;background:var(--accent-soft);color:var(--ink);border:0;min-height:0;font-weight:500}
-.slot.past{opacity:.55}
-.slot.now .h{color:var(--accent)}
+.who{font-size:13px;padding:3px 8px;border-radius:7px;background:var(--accent-soft);color:var(--ink);border:0;min-height:28px;font-weight:600}
+.slot.past{opacity:.5}
+.slot.now .h{color:var(--accent-fg);font-weight:700}
 /* barras */
 .bars{display:flex;flex-direction:column;gap:8px}
 .bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:14px}
@@ -116,24 +150,25 @@ nav.tabs button.on{color:var(--accent)}
 .bar .fill{height:100%;background:var(--bad);border-radius:4px}
 .bar.in .fill{background:var(--good)}
 /* hoja */
-.scrim{position:fixed;inset:0;z-index:20;background:rgba(10,14,18,.45);display:flex;align-items:flex-end;justify-content:center}
+.scrim{position:fixed;inset:0;z-index:20;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--surface);width:100%;max-width:640px;max-height:92%;overflow-y:auto;border-radius:18px 18px 0 0;display:flex;flex-direction:column;gap:12px;padding-block:18px calc(18px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .sheet .err{color:var(--bad);font-weight:600;font-size:14px}
 .sheet .err:empty{display:none}
 .banner{background:var(--warn-soft);color:var(--warn);border-radius:var(--r);padding:12px;font-weight:600;font-size:14px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;max-width:calc(100% - 32px)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;width:max-content;max-width:calc(100% - 32px);text-align:center}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
 .kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600;text-align:right}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
 .seg button{min-height:34px;padding:4px;font-size:13px}
 .seg button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.plan-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1fr) 40px;gap:6px;align-items:end}
+.plan-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1fr) 44px;gap:6px;align-items:end}
 .plan-row button{min-height:44px;padding:0}
 .code{font-family:var(--display);font-size:44px;font-weight:700;letter-spacing:.08em;line-height:1;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+@media (prefers-reduced-motion:reduce){button,.btn{transition:none}button:active,.btn:active{transform:none}}
 </style>
 
-<header class="top"><div class="wrap"><h1 id="vtitle">Panel</h1><span class="sub" id="hoy"></span></div></header>
+<header class="top"><div class="wrap"><div class="ttl"><span class="brand" aria-label="FITBOX">FITBOX</span><h1 id="vtitle">Panel</h1></div><span class="sub" id="hoy"></span></div></header>
 <main><div class="wrap" id="view"><div class="card"><div class="empty">Cargando tu información…</div></div></div></main>
 <button class="primary fab" id="fab" hidden></button>
 <nav class="tabs"><div class="in">
@@ -295,7 +330,7 @@ function waMsg(c){
   if(!c.vence)return `Hola ${n}, ¿cómo estás? `;
   const f=fdate(c.vence,{weekday:"long",day:"numeric",month:"long"});
   if(e.d<0)return `Hola ${n}, ¿cómo estás? Tu plan ${(c.plan||"").toLowerCase()} venció el ${f}. ¿Te gustaría renovarlo para seguir entrenando?${precio} ¡Te esperamos!`;
-  if(e.d<=cfg().aviso)return `Hola ${n}, te recuerdo que tu plan ${(c.plan||"").toLowerCase()} vence ${e.d===0?"hoy":"el "+f}. Para renovarlo puedes pagar en efectivo o por transferencia.${precio} ¡Gracias por entrenar con nosotros!`;
+  if(e.d<=cfg().aviso)return `Hola ${n}, te recuerdo que tu plan ${(c.plan||"").toLowerCase()} vence ${e.d===0?"hoy":"el "+f}. Para renovarlo puedes pagar en efectivo o por transferencia.${precio} ¡Gracias por entrenar en FITBOX!`;
   return `Hola ${n}, ¿cómo estás? `;
 }
 function waLink(c,msg){return "https://wa.me/"+waNum(c.telefono)+"?text="+encodeURIComponent(msg)}
@@ -305,8 +340,10 @@ function whats(c){
   sheet({title:"WhatsApp a "+c.nombre,
     body:`<label>Mensaje<textarea name="msg" id="w-msg" rows="6">${esc(m)}</textarea></label>
       <p class="sub">Se enviará a +${waNum(c.telefono)}. Puedes cambiar el texto antes de abrir WhatsApp.</p>
-      <a class="btn primary" id="w-go" href="${esc(waLink(c,m))}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none;display:block">Abrir WhatsApp</a>`,
-    onInput:f=>{f.querySelector("#w-go").href=waLink(c,f.msg.value)}});
+      ${bancos().length?'<button type="button" class="small" data-s="cuentas">Agregar mis cuentas al mensaje</button>':""}
+      <a class="btn primary" id="w-go" href="${esc(waLink(c,m))}" target="_blank" rel="noopener">Abrir WhatsApp</a>`,
+    onInput:f=>{f.querySelector("#w-go").href=waLink(c,f.msg.value)},
+    onClick:(a,b,f)=>{if(a==="cuentas"){f.msg.value=f.msg.value.trimEnd()+"\n\n"+textoCuentas();f.querySelector("#w-go").href=waLink(c,f.msg.value);b.remove()}}});
 }
 
 // ---------- código de acceso ----------
@@ -314,10 +351,15 @@ const codigos=()=>[...S.codigos].sort((a,b)=>(b.desde+b.creado).localeCompare(a.
 const vigente=()=>codigos().find(c=>c.desde<=today())||null;
 function nuevoCodigo(){const usados=new Set(S.codigos.map(c=>c.codigo));let c;
   do{const a=new Uint32Array(1);crypto.getRandomValues(a);c=String(a[0]%1000000).padStart(6,"0")+"#"}while(usados.has(c)||/^(\d)\1{5}/.test(c));return c}
-async function copiar(txt){try{await navigator.clipboard.writeText(txt);toast("Código copiado")}catch(e){toast("Mantén presionado el código para copiarlo")}}
+// copia al portapapeles; si el navegador no deja, usa el método antiguo
+async function copiar(txt,ok="Código copiado"){
+  let hecho=false;
+  try{await navigator.clipboard.writeText(txt);hecho=true}catch(e){
+    try{const t=document.createElement("textarea");t.value=txt;t.setAttribute("readonly","");t.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(t);t.select();t.setSelectionRange(0,txt.length);hecho=document.execCommand("copy");t.remove()}catch(e2){}}
+  toast(hecho?ok:"No se pudo copiar. Mantén presionado el texto para copiarlo.");return hecho}
 function formCodigo(){
   const ref={c:nuevoCodigo()};
-  const msg=c=>`Hola, el nuevo código de acceso al gimnasio es ${c}. Por favor no lo compartas. ¡Buen entrenamiento!`;
+  const msg=c=>`Hola, el nuevo código de acceso a FITBOX es ${c}. Por favor no lo compartas. ¡Buen entrenamiento!`;
   sheet({title:"Nuevo código de acceso",
     body:`<div class="row between"><span class="code" id="k-code">${ref.c}</span><button type="button" class="small" data-s="otro">Generar otro</button></div>
       <div class="grid2"><label>Vigente desde<input type="date" name="desde" id="k-desde" value="${today()}"></label>
@@ -336,14 +378,14 @@ function formCodigo(){
   compartirCodigo.msg=msg;
 }
 function compartirCodigo(k){
-  const txt=(n)=>`Hola${n?" "+n:""}, el nuevo código de acceso al gimnasio es ${k.codigo}. Por favor no lo compartas. ¡Buen entrenamiento!`;
+  const txt=(n)=>`Hola${n?" "+n:""}, el nuevo código de acceso a FITBOX es ${k.codigo}. Por favor no lo compartas. ¡Buen entrenamiento!`;
   const env=new Set((S.codigos.find(x=>x.id===k.id)||k).enviados||[]);
   const act=activos().sort((a,b)=>a.nombre.localeCompare(b.nombre));
   const fila=c=>{const n=c.nombre.split(" ")[0],num=waNum(c.telefono);
-    return `<div class="item"><span class="grow t">${esc(c.nombre)}</span>${num?`<a class="btn small ${env.has(c.id)?"":"primary"}" data-s="env" data-id="${c.id}" href="https://wa.me/${num}?text=${encodeURIComponent(txt(n))}" target="_blank" rel="noopener" style="text-decoration:none">${env.has(c.id)?"Enviado ✓":"Enviar"}</a>`:`<button type="button" class="small" data-s="tel" data-id="${c.id}">Agregar número</button>`}</div>`};
+    return `<div class="item"><span class="grow t">${esc(c.nombre)}</span>${num?`<a class="btn small ${env.has(c.id)?"":"primary"}" data-s="env" data-id="${c.id}" href="https://wa.me/${num}?text=${encodeURIComponent(txt(n))}" target="_blank" rel="noopener" >${env.has(c.id)?"Enviado ✓":"Enviar"}</a>`:`<button type="button" class="small" data-s="tel" data-id="${c.id}">Agregar número</button>`}</div>`};
   sheet({title:"Enviar "+k.codigo,body:`<p class="sub">Toca <b>Enviar</b> en cada cliente activo. Se abre su chat con el mensaje listo; envíalo y regresa aquí para el siguiente.</p>
     <div class="list">${act.length?act.map(fila).join(""):'<div class="empty">No hay clientes activos.</div>'}</div>
-    <div class="btns"><button type="button" data-s="copiar">Copiar código</button><a class="btn" data-s="grupo" href="https://wa.me/?text=${encodeURIComponent(txt(""))}" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Enviar a un grupo</a></div>`,
+    <div class="btns"><button type="button" data-s="copiar">Copiar código</button><a class="btn" data-s="grupo" href="https://wa.me/?text=${encodeURIComponent(txt(""))}" target="_blank" rel="noopener">Enviar a un grupo</a></div>`,
     onClick:async(a,b)=>{
       if(a==="copiar")copiar(k.codigo);
       if(a==="tel"){const c=cli(b.dataset.id);if(c)formCliente(c)}
@@ -355,6 +397,28 @@ function verCodigo(id){const k=S.codigos.find(x=>x.id===id);if(!k)return;
     <div class="btns"><button type="button" data-s="enviar">Enviar</button><button type="button" class="danger" data-s="borrar">Eliminar</button></div>`,
     onClick:(a,b)=>{if(a==="enviar")compartirCodigo(k);if(a==="borrar")confirmBtn(b,async()=>{await del(COL.codigos,k.id);closeSheet()})}});
 }
+
+// ---------- cuentas bancarias ----------
+// Se guardan en la configuración (en Supabase, privadas), no en el código, porque el repositorio es público.
+const bancos=()=>Array.isArray(S.config?.bancos)?S.config.bancos:[];
+const soloNum=n=>String(n||"").replace(/\s/g,"");
+function textoCuenta(b){return [b.banco+(b.tipo?" · "+b.tipo:""),soloNum(b.numero),b.titular?"A nombre de "+b.titular:""].filter(Boolean).join("\n")}
+function textoCuentas(){return "Cuentas para transferencia a FITBOX:\n\n"+bancos().map(textoCuenta).join("\n\n")}
+function guardarBancos(l){return write(()=>db.doc("config/general").set({...(S.config||{}),bancos:l}))}
+function formBanco(i){
+  const nuevo=i==null,b=nuevo?{}:bancos()[i];
+  sheet({title:nuevo?"Nueva cuenta bancaria":"Editar cuenta",
+    body:`<label>Banco<input name="banco" id="b-banco" value="${esc(b.banco)}" placeholder="Ej. BAC, FICOHSA" autocomplete="off"></label>
+      <label>Número de cuenta<input name="numero" id="b-num" inputmode="numeric" value="${esc(b.numero)}" autocomplete="off"></label>
+      <label>Tipo de cuenta<input name="tipo" id="b-tipo" value="${esc(b.tipo)}" placeholder="Opcional. Ej. Cuenta de ahorros"></label>
+      <label>A nombre de<input name="titular" id="b-tit" value="${esc(b.titular)}" placeholder="Opcional" autocomplete="off"></label>`,
+    extra:nuevo?"":'<button type="button" class="danger" data-s="borrar">Eliminar</button>',
+    onClick:(a,btn)=>{if(a==="borrar")confirmBtn(btn,async()=>{const l=[...bancos()];l.splice(i,1);if(await guardarBancos(l)){closeSheet();toast("Cuenta eliminada")}})},
+    onSubmit:async d=>{const x={banco:d.banco.trim(),numero:soloNum(d.numero),tipo:d.tipo.trim(),titular:d.titular.trim().toUpperCase()};
+      if(!x.banco)return "Escribe el nombre del banco.";if(!x.numero)return "Escribe el número de cuenta.";
+      const l=[...bancos()];nuevo?l.push(x):l.splice(i,1,x);const ok=await guardarBancos(l);if(ok)toast("Cuenta guardada");return ok}});
+}
+function marcarCopiado(b){const a=b.querySelector(".act");if(!a)return;b.classList.add("ok");a.textContent="Copiado ✓";setTimeout(()=>{if(b.isConnected){b.classList.remove("ok");a.textContent="Copiar"}},1800)}
 
 // ---------- reservas ----------
 function horario(f){const c=cfg();return parse(f).getDay()===0?{ap:c.apDom,ci:c.ciDom}:{ap:c.apertura,ci:c.cierre}}
@@ -470,11 +534,11 @@ function formAjustes(){
     <h3>Planes y precios</h3><div id="a-planes" style="display:flex;flex-direction:column;gap:8px">${planes.map(row).join("")}</div>
     <button type="button" class="small" data-s="mas">Agregar plan</button><p class="sub">Horas en formato de 24 h: 6 = 6 am, 23 = 11 pm. Usa 0 días para los pagos de un solo día, como el pago por hora.</p>`;
   const leer=f=>planes.map((p,i)=>({nombre:(f["pn"+i]?.value||"").trim(),dias:parseInt(f["pd"+i]?.value)||0,precio:parseFloat(String(f["pp"+i]?.value||"0").replace(",","."))||0}));
-  sheet({title:"Ajustes del gimnasio",body:body(),
+  sheet({title:"Ajustes de FITBOX",body:body(),
     onClick:(a,b,f)=>{planes=leer(f);if(a==="mas")planes.push({nombre:"",dias:30,precio:0});if(a==="quitar")planes.splice(Number(b.dataset.i),1);f.querySelector("#a-planes").innerHTML=planes.map(row).join("")},
     onSubmit:async(d,f)=>{planes=leer(f).filter(p=>p.nombre&&p.dias>=0);if(!planes.length)return "Deja al menos un plan con nombre y días.";
       const ap=parseInt(d.apertura),ci=parseInt(d.cierre),ad=parseInt(d.apDom),cd=parseInt(d.ciDom);if(!(ap>=0&&ci<=24&&ci>ap&&ad>=0&&cd<=24&&cd>ad))return "Revisa las horas de apertura y cierre.";
-      const data={capacidad:Math.max(1,parseInt(d.capacidad)||4),moneda:d.moneda.trim()||"L",apertura:ap,cierre:ci,apDom:ad,ciDom:cd,cuentas:c.cuentas,aviso:Math.max(0,parseInt(d.aviso)||5),planes};
+      const data={...(S.config||{}),capacidad:Math.max(1,parseInt(d.capacidad)||4),moneda:d.moneda.trim()||"L",apertura:ap,cierre:ci,apDom:ad,ciDom:cd,cuentas:c.cuentas,aviso:Math.max(0,parseInt(d.aviso)||5),planes};
       const ok=await write(()=>db.doc("config/general").set(data));if(ok)toast("Ajustes guardados");return ok}});
 }
 
@@ -490,7 +554,7 @@ function vPanel(){
   const atender=[...vencidos.map(x=>({c:x,e:estado(x)})),...pv.map(x=>({c:x,e:estado(x)}))].sort((a,b)=>a.e.d-b.e.d);
   const nombreMes=parse(hoy).toLocaleDateString("es",{month:"long"});
   return `${S.dbOk===false?'<div class="banner">No se pudo conectar con tus datos. Revisa tu internet y vuelve a abrir la app.</div>':""}
-  ${vigente()?`<button class="card" data-a="tab" data-v="mas" style="text-align:left"><div class="row between"><h3>Código de acceso</h3><span class="num" style="font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:.06em">${esc(vigente().codigo)}</span></div></button>`:""}
+  ${vigente()?`<button class="card codecard" data-a="tab" data-v="mas"><div class="row between" style="width:100%"><h3>Código de acceso</h3><span class="codev">${esc(vigente().codigo)}</span></div></button>`:""}
   <section class="card"><div class="row between"><h3>Ahora en el gimnasio</h3><span class="pill ${ahora>=c.capacidad?"bad":ahora?"good":""}">${ahora} de ${c.capacidad}</span></div>
     ${siguientes.length?`<div class="list">${siguientes.slice(0,5).map(r=>`<button class="item" data-a="res" data-id="${r.id}"><span class="num" style="width:70px">${fh(r.inicio)}</span><span class="t grow">${esc(nombreRes(r))}</span><span class="m">${r.dur} h</span></button>`).join("")}</div>`:`<div class="empty">No hay más reservas hoy.</div>`}
   </section>
@@ -499,7 +563,7 @@ function vPanel(){
     <div class="row between sub"><span>Disponible hoy</span><b class="num">${signed(Object.values(saldos()).reduce((a,b)=>a+b,0))}</b></div>
     ${gas>0&&gas>ing?`<div class="sub">Este mes los gastos superan a los ingresos. Revisa en qué se va el dinero abajo.</div>`:""}</section>
   <div class="stats"><button class="stat" data-a="tab" data-v="clientes" data-f="activos"><span class="v">${act.length}</span><span class="l">Clientes activos</span></button>
-    <button class="stat" data-a="tab" data-v="clientes" data-f="vencer"><span class="v ${pv.length?"":""}" style="${pv.length?"color:var(--warn)":""}">${pv.length}</span><span class="l">Por vencer (${c.aviso} d)</span></button></div>
+    <button class="stat" data-a="tab" data-v="clientes" data-f="vencer"><span class="v ${pv.length?"warn":""}">${pv.length}</span><span class="l">Por vencer (${c.aviso} d)</span></button></div>
   <section class="card"><h3>Planes vencidos o por vencer</h3>${atender.length?`<div class="list">${atender.slice(0,8).map(({c:x,e})=>`<div class="item"><span class="grow" data-a="cli" data-id="${x.id}" style="min-width:0"><div class="t">${esc(x.nombre)}</div><div class="m"><span class="pill ${e.k}">${e.t}</span> ${esc(x.plan||"")}</div></span><button class="small" data-a="wa" data-id="${x.id}">Avisar</button><button class="small primary" data-a="cobrar" data-id="${x.id}">Renovar</button></div>`).join("")}</div>`:`<div class="empty">Nadie con plan vencido o por vencer. Todo al día.</div>`}</section>
   <section class="card"><div class="row between"><h3>En qué se va el dinero</h3><span class="sub">${nombreMes}</span></div>${barras(porCat(mm.filter(m=>m.tipo==="gasto")),"")}</section>
   ${(mant.length||faltan.length)?`<section class="card"><h3>Pendientes del local</h3><div class="list">
@@ -559,7 +623,14 @@ function vMas(){
   const mant=[...S.mant].sort((a,b)=>a.proxima.localeCompare(b.proxima));
   const ins=[...S.insumos].sort((a,b)=>({falta:0,poco:1,hay:2}[a.estado]-{falta:0,poco:1,hay:2}[b.estado])||a.nombre.localeCompare(b.nombre));
   const kv=vigente(),hist=codigos();
-  return `<section class="card"><div class="row between"><h2>Código de acceso</h2><button class="small primary" data-a="ncod">Nuevo código</button></div>
+  const bl=bancos();
+  return `<section class="card"><div class="row between"><h2>Cuentas bancarias</h2><button class="small" data-a="nbanco">Agregar</button></div>
+    ${bl.length?`<div class="list">${bl.map((b,i)=>`<div class="acct"><div class="row between"><div class="grow"><div class="bank">${esc(b.banco)}</div><div class="meta">${[b.tipo,b.titular].filter(Boolean).map(esc).join(" · ")||"&nbsp;"}</div></div><button class="small" data-a="ebanco" data-i="${i}">Editar</button></div>
+      <button class="copynum" data-a="copnum" data-i="${i}" aria-label="Copiar número de cuenta ${esc(b.banco)}"><span class="n">${esc(soloNum(b.numero))}</span><span class="act">Copiar</span></button></div>`).join("")}</div>
+      <div class="btns"><button class="small" data-a="copcuentas">Copiar todas</button><a class="btn small" href="https://wa.me/?text=${encodeURIComponent(textoCuentas())}" target="_blank" rel="noopener">WhatsApp</a></div>
+      <p class="sub">Toca un número para copiarlo. <b>Copiar todas</b> copia banco, número y nombre, listo para pegar en un chat.</p>`
+    :`<div class="empty">Agrega tus cuentas de BAC y FICOHSA para copiarlas con un toque cuando un cliente quiera pagar por transferencia.</div>`}</section>
+  <section class="card"><div class="row between"><h2>Código de acceso</h2><button class="small primary" data-a="ncod">Nuevo código</button></div>
     ${kv?`<div class="row between"><span class="code">${esc(kv.codigo)}</span><button class="small" data-a="copcod">Copiar</button></div><div class="sub">Vigente desde ${fdate(kv.desde,{day:"numeric",month:"long"})}${kv.nota?" · "+esc(kv.nota):""} · enviado a ${(kv.enviados||[]).length} de ${activos().length} activos</div><button class="small" data-a="envcod">Enviar a mis clientes</button>`:`<div class="empty">Aún no hay un código registrado. Toca <b>Nuevo código</b> para generar uno y enviarlo.</div>`}
     ${hist.length>1||(hist.length&&!kv)?`<h3>Historial</h3><div class="list">${hist.filter(k=>k!==kv).map(k=>`<button class="item" data-a="vcod" data-id="${k.id}"><span class="num grow t">${esc(k.codigo)}</span><span class="m">${k.desde>today()?"Desde ":""}${fdate(k.desde,{day:"numeric",month:"short",year:"numeric"})}</span></button>`).join("")}</div>`:""}</section>
   <section class="card"><div class="row between"><h2>Mantenimiento</h2><button class="small" data-a="nmant">Agregar</button></div>
@@ -595,7 +666,7 @@ async function exportar(btn){
   addS("Reservas",reservas,["Fecha","Hora","Horas","Cliente"]);addS("Mantenimiento",mant,["Tarea"]);addS("Insumos",ins,["Insumo","Estado"]);
   const buf=XLSX.write(wb,{bookType:"xlsx",type:"array",cellDates:true});
   btn.disabled=true;
-  try{await guardarArchivo("Gimnasio "+today()+".xlsx",new Uint8Array(buf),"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
+  try{await guardarArchivo("FITBOX "+today()+".xlsx",new Uint8Array(buf),"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
   catch(e){if(e&&e.name!=="AbortError")toast("No se pudo descargar el Excel.")}
   finally{btn.disabled=false}
 }
@@ -625,6 +696,9 @@ const A={
   cicloins:t=>{const i=S.insumos.find(x=>x.id===t.dataset.id);if(i)upd(COL.insumos,i.id,{estado:{falta:"poco",poco:"hay",hay:"falta"}[i.estado]||"hay"})},
   wa:t=>{const c=cli(t.dataset.id);if(c)whats(c)},
   ncod:()=>formCodigo(), vcod:t=>verCodigo(t.dataset.id), envcod:()=>{const k=vigente();if(k)compartirCodigo(k)}, copcod:()=>{const k=vigente();if(k)copiar(k.codigo)},
+  nbanco:()=>formBanco(), ebanco:t=>formBanco(Number(t.dataset.i)),
+  copnum:async t=>{const b=bancos()[Number(t.dataset.i)];if(b&&await copiar(soloNum(b.numero),"Número de "+b.banco+" copiado"))marcarCopiado(t)},
+  copcuentas:()=>copiar(textoCuentas(),"Cuentas copiadas"),
   ajustes:()=>formAjustes(), exportar:t=>exportar(t), salir:t=>confirmBtn(t,()=>window.GymDB.salir()),
 };
 document.addEventListener("click",e=>{if(sheetEl&&sheetEl.contains(e.target))return;const t=e.target.closest("[data-a]");if(t&&A[t.dataset.a]){e.stopPropagation();A[t.dataset.a](t)}});
