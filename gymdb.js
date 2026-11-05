@@ -66,9 +66,9 @@ function errAll(){Object.values(colL).concat(Object.values(docL)).forEach(s=>s.f
 function login(){
   return new Promise(resolve=>{
     const el=document.createElement("div");
-    el.setAttribute("style","position:fixed;inset:0;z-index:50;background:var(--bg,#eef0ec);display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))");
+    el.setAttribute("style","position:fixed;inset:0;z-index:50;background:var(--bar,#000);display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))");
     el.innerHTML=`<form class="card" style="width:100%;max-width:380px;gap:14px" novalidate>
-      <div style="display:flex;align-items:center;gap:12px"><img src="icons/icon-192.png" alt="" width="48" height="48" style="border-radius:12px"><div><h1>Mi Gimnasio</h1><div class="sub">Entra con tu correo y contraseña</div></div></div>
+      <div style="display:flex;align-items:center;gap:12px"><img src="icons/icon-192.png" alt="" width="52" height="52" style="border-radius:12px"><div><h1>FITBOX</h1><div class="sub">Entra con tu correo y contraseña</div></div></div>
       <label>Correo<input type="email" name="email" autocomplete="username" inputmode="email" required></label>
       <label>Contraseña<input type="password" name="pass" autocomplete="current-password" required></label>
       <div class="sub" id="lg-err" style="color:var(--bad);font-weight:600"></div>
